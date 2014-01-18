@@ -9,7 +9,7 @@ require_once(dirname(__FILE__) . "/settings.php");
  *
  * @package             Lock_entry
  * @author              Denver Sessink (dsessink@gmail.com)
- * @copyright            Copyright (c) 2012 Denver Sessink
+ * @copyright           Copyright (c) 2012 Denver Sessink
  */
 class Lock_entry
 {
@@ -60,25 +60,49 @@ class Lock_entry
             die('ERROR.0');
         }
 
-        if (!$this->EE->input->get('entry_id')) {
-            die('ERROR.1');
+        // Accept object ID
+        if (!$this->EE->input->get('object_id')) {
+            die('ERROR.10');
         }
 
-        if (!$this->EE->input->get('member_id')) {
-            die('ERROR.2');
+        if (!$this->EE->input->get('session_id')) {
+            die('ERROR.20');
+        }
+
+        // accept entry or template mode
+        if ( !$this->EE->input->get('mode') == "entry" && !$this->EE->input->get('mode') == "template" ) {
+            die('ERROR.30');
         }
 
         // - Ping (keep alive, activity update) (AJAX)
-        $entry_id = intval($this->EE->input->get('entry_id'));
-        $member_id = intval($this->EE->input->get('member_id'));
+        if ( $this->EE->input->get('mode') == 'template' )
+        {
+            $mode = "template";
+        }
+        else
+        {
+            $mode = "entry"; // which is default
+        }
 
-        // validate entry_id and member_id
-        if (lock_entry_settings::_generate_ping_hash($entry_id, $member_id) != $this->EE->input->get('hash')) {
-            die('ERROR.3');
+        $object_id = $this->EE->input->get('object_id');
+        $session_id = $this->EE->input->get('session_id');
+
+        // validate entry_id|template_id and member_id
+        if (lock_entry_settings::_generate_ping_hash($object_id, $session_id) != $this->EE->input->get('hash')) {
+            die('ERROR.40');
         }
 
         $data = array('last_activity' => date("Y-m-d H:i:s"));
-        $sql = $this->EE->db->update_string('lock_entry_entries', $data, sprintf("entry_id = '%d AND member_id = %d'", $entry_id, $member_id));
+        $sql = $this->EE->db->update_string(
+            'lock_entry_entries',
+            $data,
+            sprintf(
+                "`%s` = %d AND `session_id` = %d",
+                ($mode == "template") ? "template_id" : "entry_id",
+                $object_id,
+                $session_id
+            )
+        );
         $this->EE->db->query($sql);
 
         die('OK');
