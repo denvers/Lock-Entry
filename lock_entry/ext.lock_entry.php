@@ -257,7 +257,7 @@ class Lock_entry_ext
         $query = $this->EE->db->get();
 
         if (count($query->result_array()) > 0) {
-            $record = $query->result_array()[0];
+            $record = array_shift($query->result_array());
 
             // get member name from lock
             $this->EE->db->select('member_id,screen_name,email')
@@ -267,7 +267,7 @@ class Lock_entry_ext
             $query = $this->EE->db->get();
             if (count($query->result_array()) == 0) return false; // member not found
 
-            $member = $query->result_array()[0];
+            $member = array_shift($query->result_array());
 
             return array(
                 'member_id' => $member['member_id'],

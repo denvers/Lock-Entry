@@ -1,7 +1,7 @@
 <?php if (!defined("BASEPATH")) exit('No direct script access allowed.');
 
 define("LOCK_ENTRY_NAME", "Lock Entry");
-define("LOCK_ENTRY_VERSION", "1.0");
+define("LOCK_ENTRY_VERSION", "1.0.1");
 define("LOCK_ENTRY_DESCRIPTION", "Lock entry if the entry is currently being edited by another user.");
 define("LOCK_ENTRY_SETTINGS_EXIST", "n");
 define("LOCK_ENTRY_DOCS_URL", "");
